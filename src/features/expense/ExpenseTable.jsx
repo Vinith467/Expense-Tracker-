@@ -12,7 +12,9 @@ import { DEFAULT_CURRENCY } from '../../constants/app';
 
 export default function ExpenseTable() {
   const { expenses, loading, deleteExpense } = useExpenses();
-  const [sorting, setSorting] = useState([]);
+  const [sorting, setSorting] = useState([{ id: 'date', desc: true }]);
+
+  const grandTotal = expenses.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
 
   const columns = [
     {
@@ -165,6 +167,14 @@ export default function ExpenseTable() {
         </table>
       </div>
 
+      {/* Desktop Grand Total Footer */}
+      <div className="hidden md:flex justify-between items-center p-6 bg-slate-900 border-t border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] z-10 relative">
+        <span className="text-xl font-bold text-slate-300 tracking-wider uppercase">Grand Total</span>
+        <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-primary drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+          {new Intl.NumberFormat('en-IN', { style: 'currency', currency: DEFAULT_CURRENCY }).format(grandTotal)}
+        </span>
+      </div>
+
       {/* Mobile Card View (below md) */}
       <div className="md:hidden flex flex-col divide-y divide-white/5">
         {table.getRowModel().rows.length > 0 ? (
@@ -232,6 +242,14 @@ export default function ExpenseTable() {
             <span>No expenses found.</span>
           </div>
         )}
+      </div>
+
+      {/* Mobile Grand Total Footer */}
+      <div className="md:hidden flex justify-between items-center p-5 bg-slate-900 border-t border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] sticky bottom-0 z-20">
+        <span className="text-lg font-bold text-slate-300 tracking-wider uppercase">Total</span>
+        <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-primary drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+          {new Intl.NumberFormat('en-IN', { style: 'currency', currency: DEFAULT_CURRENCY }).format(grandTotal)}
+        </span>
       </div>
 
       {/* Pagination Controls */}
