@@ -28,7 +28,7 @@ export default function ExpenseTable() {
       accessorKey: 'category',
       header: 'Category',
       cell: info => (
-        <span className="bg-primary/20 text-primary px-2 py-1 rounded text-xs font-medium">
+        <span className="bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-lg text-xs font-bold tracking-wide uppercase shadow-[0_0_10px_rgba(16,185,129,0.1)]">
           {info.getValue()}
         </span>
       ),
@@ -57,10 +57,10 @@ export default function ExpenseTable() {
               deleteExpense(info.row.original.id);
             }
           }}
-          className="text-slate-400 hover:text-danger transition-colors p-1"
+          className="text-slate-500 hover:text-danger bg-slate-900/50 hover:bg-danger/20 p-2 rounded-xl transition-all duration-300 shadow-inner"
           title="Delete Expense"
         >
-          <MdDelete className="text-lg" />
+          <MdDelete className="text-xl" />
         </button>
       )
     }
@@ -91,13 +91,13 @@ export default function ExpenseTable() {
     <div className="glass-card overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-300">
-          <thead className="text-xs uppercase bg-white/5 text-slate-400 border-b border-white/10">
+          <thead className="text-xs uppercase bg-slate-900/60 text-slate-400 border-b border-white/10">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
                   <th 
                     key={header.id} 
-                    className="px-6 py-4 font-medium cursor-pointer hover:text-white"
+                    className="px-6 py-5 font-bold tracking-wider cursor-pointer hover:text-white transition-colors"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder
@@ -118,9 +118,9 @@ export default function ExpenseTable() {
           <tbody className="divide-y divide-white/5">
             {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map(row => (
-                <tr key={row.id} className="hover:bg-white/5 transition-colors">
+                <tr key={row.id} className="hover:bg-white/5 transition-colors group">
                   {row.getVisibleCells().map(cell => (
-                    <td key={cell.id} className="px-6 py-4">
+                    <td key={cell.id} className="px-6 py-5 font-medium group-hover:text-white transition-colors">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
@@ -128,8 +128,11 @@ export default function ExpenseTable() {
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length} className="px-6 py-8 text-center text-slate-500">
-                  No expenses found. Add one above!
+                <td colSpan={columns.length} className="px-6 py-12 text-center text-slate-500 font-medium">
+                  <div className="flex flex-col items-center justify-center space-y-3">
+                    <MdDelete className="text-4xl opacity-20" />
+                    <span>No expenses found. Add one above!</span>
+                  </div>
                 </td>
               </tr>
             )}
@@ -138,24 +141,24 @@ export default function ExpenseTable() {
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex items-center justify-between px-6 py-3 border-t border-white/10 text-sm text-slate-400 bg-white/5">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between px-6 py-4 border-t border-white/10 text-sm text-slate-400 bg-slate-900/60">
+        <div className="flex items-center gap-4">
           <button
-            className="p-1 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             Previous
           </button>
           <button
-            className="p-1 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
             Next
           </button>
         </div>
-        <div>
+        <div className="font-medium px-4 py-2 bg-slate-900/50 rounded-xl border border-white/5 shadow-inner">
           Page {table.getState().pagination.pageIndex + 1} of{' '}
           {table.getPageCount()}
         </div>

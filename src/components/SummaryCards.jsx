@@ -26,9 +26,9 @@ export default function SummaryCards() {
   };
 
   const cards = [
-    { title: 'Total Expenses', amount: totalExpenses, icon: MdAttachMoney, color: 'text-primary' },
-    { title: 'This Month', amount: monthExpenses, icon: MdCalendarMonth, color: 'text-secondary' },
-    { title: 'Today', amount: todayExpenses, icon: MdToday, color: 'text-warning' },
+    { title: 'Total Expenses', amount: totalExpenses, icon: MdAttachMoney, color: 'text-primary', bg: 'bg-primary/20', shadow: 'shadow-[0_0_15px_rgba(16,185,129,0.3)]' },
+    { title: 'This Month', amount: monthExpenses, icon: MdCalendarMonth, color: 'text-secondary', bg: 'bg-secondary/20', shadow: 'shadow-[0_0_15px_rgba(6,182,212,0.3)]' },
+    { title: 'Today', amount: todayExpenses, icon: MdToday, color: 'text-danger', bg: 'bg-danger/20', shadow: 'shadow-[0_0_15px_rgba(244,63,94,0.3)]' },
   ];
 
   return (
@@ -36,13 +36,13 @@ export default function SummaryCards() {
       {cards.map((card, idx) => {
         const Icon = card.icon;
         return (
-          <div key={idx} className="glass-card p-6 flex items-center gap-4">
-            <div className={`p-3 rounded-full bg-white/5 ${card.color}`}>
-              <Icon className="text-2xl" />
+          <div key={idx} className="glass-card p-6 flex items-center gap-5 group">
+            <div className={`p-4 rounded-2xl ${card.bg} ${card.color} ${card.shadow} transition-transform duration-300 group-hover:scale-110`}>
+              <Icon className="text-3xl" />
             </div>
             <div>
-              <p className="text-sm text-slate-400 font-medium">{card.title}</p>
-              <p className="text-2xl font-bold text-white tracking-tight">
+              <p className="text-sm text-slate-400 font-medium tracking-wide uppercase">{card.title}</p>
+              <p className="text-3xl font-bold text-white tracking-tight mt-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-slate-400 transition-all">
                 {formatCurrency(card.amount)}
               </p>
             </div>

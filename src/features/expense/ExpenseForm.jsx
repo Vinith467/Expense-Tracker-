@@ -30,19 +30,19 @@ export default function ExpenseForm() {
   };
 
   return (
-    <div className="glass-card p-6">
-      <h2 className="text-xl font-semibold mb-4 text-white">Add Expense</h2>
+    <div className="glass-card p-8">
+      <h2 className="text-xl font-bold mb-6 text-white tracking-wide">Add New Expense</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Amount */}
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Amount</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Amount</label>
             <input
               type="number"
               step="0.01"
               {...register('amount', { required: 'Amount is required', min: 0.01 })}
-              className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary transition-colors"
+              className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-4 py-3 text-white text-lg focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all shadow-inner"
               placeholder="0.00"
             />
             {errors.amount && <p className="text-danger text-xs mt-1">{errors.amount.message}</p>}
@@ -50,11 +50,11 @@ export default function ExpenseForm() {
 
           {/* Date */}
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Date</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Date</label>
             <input
               type="date"
               {...register('date', { required: 'Date is required' })}
-              className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary transition-colors"
+              className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-4 py-3 text-white text-lg focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all shadow-inner"
             />
             {errors.date && <p className="text-danger text-xs mt-1">{errors.date.message}</p>}
           </div>
@@ -63,10 +63,10 @@ export default function ExpenseForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Category</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Category</label>
             <select
               {...register('category')}
-              className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary transition-colors [&>option]:bg-slate-900"
+              className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all shadow-inner [&>option]:bg-slate-900"
             >
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -74,10 +74,10 @@ export default function ExpenseForm() {
 
           {/* Payment Method */}
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Payment Method</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Payment</label>
             <select
               {...register('paymentMethod')}
-              className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary transition-colors [&>option]:bg-slate-900"
+              className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all shadow-inner [&>option]:bg-slate-900"
             >
               {PAYMENT_METHODS.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
@@ -86,11 +86,11 @@ export default function ExpenseForm() {
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-1">Description</label>
+          <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Description</label>
           <input
             type="text"
             {...register('description')}
-            className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary transition-colors"
+            className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all shadow-inner"
             placeholder="What was this for?"
           />
         </div>
@@ -98,7 +98,7 @@ export default function ExpenseForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50"
+          className="glass-button w-full bg-primary/20 border border-primary/50 text-primary hover:bg-primary hover:text-white font-bold py-4 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] disabled:opacity-50 mt-4"
         >
           {isSubmitting ? 'Adding...' : 'Add Expense'}
         </button>
