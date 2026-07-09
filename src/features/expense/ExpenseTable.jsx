@@ -113,7 +113,8 @@ export default function ExpenseTable() {
 
   return (
     <div className="glass-card overflow-hidden">
-      <div className="overflow-x-auto">
+      {/* Desktop Table View (md and up) */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-300">
           <thead className="text-xs uppercase bg-slate-900/60 text-slate-400 border-b border-white/10">
             {table.getHeaderGroups().map(headerGroup => (
@@ -121,7 +122,7 @@ export default function ExpenseTable() {
                 {headerGroup.headers.map(header => (
                   <th 
                     key={header.id} 
-                    className={`px-4 sm:px-6 py-4 sm:py-5 font-bold tracking-wider cursor-pointer hover:text-white transition-colors ${header.column.columnDef.meta?.className || ''}`}
+                    className={`px-6 py-5 font-bold tracking-wider cursor-pointer hover:text-white transition-colors ${header.column.columnDef.meta?.className || ''}`}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder
@@ -144,7 +145,7 @@ export default function ExpenseTable() {
               table.getRowModel().rows.map(row => (
                 <tr key={row.id} className="hover:bg-white/5 transition-colors group">
                   {row.getVisibleCells().map(cell => (
-                    <td key={cell.id} className={`px-4 sm:px-6 py-4 sm:py-5 font-medium group-hover:text-white transition-colors ${cell.column.columnDef.meta?.className || ''}`}>
+                    <td key={cell.id} className={`px-6 py-5 font-medium group-hover:text-white transition-colors ${cell.column.columnDef.meta?.className || ''}`}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
@@ -162,6 +163,75 @@ export default function ExpenseTable() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Card View (below md) */}
+      <div className="md:hidden flex flex-col divide-y divide-white/5">
+        {table.getRowModel().rows.length > 0 ? (
+          table.getRowModel().rows.map(row => {
+            const data = row.original;
+            return (
+              <div key={row.id} className="p-5 space-y-4 hover:bg-white/5 transition-colors">
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-white font-semibold text-base leading-tight">
+                      {data.description || <span className="text-slate-500 italic font-normal">No description</span>}
+                    </span>
+                    <span className="text-slate-500 text-[11px] font-bold tracking-wider uppercase">
+                      {new Date(data.date).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <span className="bg-primary/10 text-primary border border-primary/20 px-2 py-1 rounded-md text-[10px] font-black tracking-widest uppercase shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+                    {data.category}
+                  </span>
+                </div>
+
+                {data.items && data.items.length > 0 && (
+                  <div className="bg-slate-950/50 rounded-xl p-3 border border-white/5 space-y-2">
+                    {data.items.map((item, idx) => (
+                      <div key={idx} className="flex justify-between items-center text-sm">
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary/50"></div>
+                          <span className="text-slate-300 font-medium">{item.name}</span>
+                          <span className="text-slate-500 text-xs font-bold bg-white/5 px-1.5 rounded">x{item.quantity}</span>
+                        </div>
+                        <span className="text-emerald-400/90 font-mono text-xs">
+                          ₹{parseFloat(item.price * item.quantity).toFixed(2)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex justify-between items-center pt-3 border-t border-white/5 mt-2">
+                  <span className="text-slate-500 text-xs font-medium bg-slate-900/50 px-2 py-1 rounded-lg border border-white/5">
+                    {data.paymentMethod}
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300">
+                      {new Intl.NumberFormat('en-IN', { style: 'currency', currency: DEFAULT_CURRENCY }).format(data.amount)}
+                    </span>
+                    <button
+                      onClick={() => {
+                        if (window.confirm("Are you sure you want to delete this expense?")) {
+                          deleteExpense(data.id);
+                        }
+                      }}
+                      className="text-slate-500 hover:text-danger bg-slate-900/50 hover:bg-danger/20 p-2 rounded-xl transition-all duration-300 border border-white/5"
+                    >
+                      <MdDelete className="text-lg" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className="p-12 text-center text-slate-500 font-medium flex flex-col items-center justify-center space-y-3">
+            <MdDelete className="text-4xl opacity-20" />
+            <span>No expenses found.</span>
+          </div>
+        )}
       </div>
 
       {/* Pagination Controls */}
