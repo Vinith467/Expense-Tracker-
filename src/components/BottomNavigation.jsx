@@ -1,11 +1,11 @@
 import { NavLink } from 'react-router-dom';
 import { ROUTES } from '../constants/app';
-import { MdDashboard, MdAttachMoney } from 'react-icons/md';
+import { MdAddCircle, MdHistory, MdAttachMoney } from 'react-icons/md';
 
 export default function BottomNavigation() {
   const navItems = [
-    { name: 'Dashboard', path: ROUTES.DASHBOARD, icon: MdDashboard },
-    { name: 'Expenses', path: ROUTES.EXPENSES, icon: MdAttachMoney },
+    { name: 'Add Data', path: ROUTES.DASHBOARD, icon: MdAddCircle },
+    { name: 'History', path: ROUTES.EXPENSES, icon: MdHistory },
   ];
 
   return (

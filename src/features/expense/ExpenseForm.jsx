@@ -16,7 +16,7 @@ export default function ExpenseForm() {
       date: new Date().toISOString().split('T')[0],
       description: '',
       paymentMethod: PAYMENT_METHODS[0],
-      items: [{ name: '', price: '' }]
+      items: [{ name: '', price: '', quantity: '1' }]
     }
   });
 
@@ -26,7 +26,11 @@ export default function ExpenseForm() {
   });
 
   const watchItems = watch("items");
-  const calculatedTotal = watchItems?.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0) || 0;
+  const calculatedTotal = watchItems?.reduce((sum, item) => {
+    const p = parseFloat(item.price) || 0;
+    const q = parseInt(item.quantity, 10) || 0;
+    return sum + (p * q);
+  }, 0) || 0;
 
   const { addExpense } = useExpenses();
 
@@ -39,7 +43,11 @@ export default function ExpenseForm() {
         finalAmount = calculatedTotal;
         finalItems = data.items
           .filter(item => item.name.trim() !== '' && item.price !== '')
-          .map(item => ({ ...item, price: parseFloat(item.price) }));
+          .map(item => ({ 
+            ...item, 
+            price: parseFloat(item.price),
+            quantity: parseInt(item.quantity, 10) || 1
+          }));
       } else {
         finalAmount = parseFloat(data.amount);
       }
@@ -69,7 +77,7 @@ export default function ExpenseForm() {
   return (
     <div className="glass-card p-8 relative overflow-hidden">
       <div className="flex items-center justify-between mb-6 relative z-10">
-        <h2 className="text-xl font-bold text-white tracking-wide">Add New Expense</h2>
+        <h2 className="text-xl font-bold text-white tracking-wide">Add New Entry</h2>
         <button
           type="button"
           onClick={() => setIsMultiItem(!isMultiItem)}
@@ -89,7 +97,7 @@ export default function ExpenseForm() {
         {/* Toggle between Single Amount and Multiple Items */}
         {!isMultiItem ? (
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Amount</label>
+            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Amount (₹)</label>
             <input
               type="number"
               step="0.01"
@@ -102,30 +110,39 @@ export default function ExpenseForm() {
         ) : (
           <div className="p-4 rounded-2xl bg-slate-900/40 border border-white/5 space-y-4 shadow-inner">
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-xs font-semibold text-primary uppercase tracking-wider">Line Items (Dishes, Products, etc.)</label>
+              <label className="block text-xs font-semibold text-primary uppercase tracking-wider">Items / Dishes</label>
               <div className="text-sm font-bold text-white bg-primary/20 px-3 py-1 rounded-lg border border-primary/20">
-                Total: ${calculatedTotal.toFixed(2)}
+                Total: ₹{calculatedTotal.toFixed(2)}
               </div>
             </div>
             
             <div className="space-y-3">
               {fields.map((field, index) => (
-                <div key={field.id} className="flex items-center gap-3">
-                  <div className="flex-1">
+                <div key={field.id} className="flex items-center gap-2">
+                  <div className="flex-[2]">
                     <input
                       type="text"
                       {...register(`items.${index}.name`, { required: true })}
-                      placeholder="Item name (e.g., Pizza)"
-                      className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all"
+                      placeholder="Item (e.g. Pizza)"
+                      className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all"
                     />
                   </div>
-                  <div className="w-28">
+                  <div className="flex-1">
                     <input
                       type="number"
                       step="0.01"
                       {...register(`items.${index}.price`, { required: true, min: 0.01 })}
-                      placeholder="Price"
-                      className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all"
+                      placeholder="Price (₹)"
+                      className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all"
+                    />
+                  </div>
+                  <div className="w-16">
+                    <input
+                      type="number"
+                      min="1"
+                      {...register(`items.${index}.quantity`, { required: true, min: 1 })}
+                      placeholder="Qty"
+                      className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-2 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all text-center"
                     />
                   </div>
                   {fields.length > 1 && (
@@ -143,7 +160,7 @@ export default function ExpenseForm() {
             
             <button
               type="button"
-              onClick={() => append({ name: '', price: '' })}
+              onClick={() => append({ name: '', price: '', quantity: '1' })}
               className="flex items-center gap-2 text-sm text-primary hover:text-emerald-400 font-medium transition-colors pt-2"
             >
               <MdAdd className="text-lg" /> Add another item
@@ -190,7 +207,7 @@ export default function ExpenseForm() {
               type="text"
               {...register('description')}
               className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all shadow-inner"
-              placeholder={isMultiItem ? "e.g., Dinner at Olive Garden" : "What was this for?"}
+              placeholder={isMultiItem ? "e.g., Table 4 Order" : "What was this for?"}
             />
           </div>
         </div>
@@ -200,7 +217,7 @@ export default function ExpenseForm() {
           disabled={isSubmitting || (isMultiItem && calculatedTotal <= 0)}
           className="glass-button w-full bg-primary/20 border border-primary/50 text-primary hover:bg-primary hover:text-white font-bold py-4 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] disabled:opacity-50 mt-4"
         >
-          {isSubmitting ? 'Adding...' : 'Add Expense'}
+          {isSubmitting ? 'Saving...' : 'Submit'}
         </button>
 
       </form>

@@ -33,9 +33,9 @@ export default function ExpenseTable() {
               <div className="bg-slate-950/50 rounded-lg p-2 border border-white/5 space-y-1 mt-1">
                 {items.map((item, idx) => (
                   <div key={idx} className="flex justify-between text-xs text-slate-400">
-                    <span>• {item.name}</span>
+                    <span>• {item.name} <span className="text-slate-500">(x{item.quantity})</span></span>
                     <span className="text-slate-300 font-medium">
-                      ${parseFloat(item.price).toFixed(2)}
+                      ₹{parseFloat(item.price * item.quantity).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -63,7 +63,7 @@ export default function ExpenseTable() {
       header: 'Amount',
       cell: info => {
         const amount = parseFloat(info.getValue());
-        return new Intl.NumberFormat('en-US', {
+        return new Intl.NumberFormat('en-IN', {
           style: 'currency',
           currency: DEFAULT_CURRENCY
         }).format(amount);
