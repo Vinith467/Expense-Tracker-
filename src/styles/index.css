@@ -7,7 +7,7 @@
   border-primary/40, rounded-xl (already built in), etc.
 */
 @theme {
-  --color-background: #090e17; /* richer deep slate/midnight */
+  --color-background: #02020e; /* Matches the generated splash screen icon edge exactly */
   --color-surface: #1e293b80; /* used with glassmorphism cards */
 
   --color-primary: #10b981; /* emerald */

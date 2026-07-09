@@ -4,8 +4,8 @@
   "description": "A premium glassmorphism expense tracking application.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#090e17",
-  "theme_color": "#090e17",
+  "background_color": "#02020e",
+  "theme_color": "#02020e",
   "icons": [
     {
       "src": "/icon-192.png",
