@@ -36,9 +36,9 @@ export default function ExpenseTable() {
               <div className="bg-slate-950/50 rounded-lg p-2 border border-white/5 space-y-1 mt-1">
                 {items.map((item, idx) => (
                   <div key={idx} className="flex justify-between text-xs text-slate-400">
-                    <span>• {item.name} <span className="text-slate-500">(x{item.quantity})</span></span>
+                    <span>• {item.name} <span className="text-slate-500">(x{item.quantity || 1})</span></span>
                     <span className="text-slate-300 font-medium">
-                      ₹{parseFloat(item.price * item.quantity).toFixed(2)}
+                      ₹{parseFloat((item.price || 0) * (item.quantity || 1)).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -203,10 +203,10 @@ export default function ExpenseTable() {
                         <div className="flex items-center gap-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-primary/50"></div>
                           <span className="text-slate-300 font-medium">{item.name}</span>
-                          <span className="text-slate-500 text-xs font-bold bg-white/5 px-1.5 rounded">x{item.quantity}</span>
+                          <span className="text-slate-500 text-xs font-bold bg-white/5 px-1.5 rounded">x{item.quantity || 1}</span>
                         </div>
                         <span className="text-emerald-400/90 font-mono text-xs">
-                          ₹{parseFloat(item.price * item.quantity).toFixed(2)}
+                          ₹{parseFloat((item.price || 0) * (item.quantity || 1)).toFixed(2)}
                         </span>
                       </div>
                     ))}
