@@ -23,6 +23,27 @@ export default function ExpenseTable() {
     {
       accessorKey: 'description',
       header: 'Description',
+      cell: info => {
+        const desc = info.getValue();
+        const items = info.row.original.items;
+        return (
+          <div className="flex flex-col gap-2">
+            <span className="font-medium text-white">{desc || <span className="text-slate-500 italic">No description</span>}</span>
+            {items && items.length > 0 && (
+              <div className="bg-slate-950/50 rounded-lg p-2 border border-white/5 space-y-1 mt-1">
+                {items.map((item, idx) => (
+                  <div key={idx} className="flex justify-between text-xs text-slate-400">
+                    <span>• {item.name}</span>
+                    <span className="text-slate-300 font-medium">
+                      ${parseFloat(item.price).toFixed(2)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      }
     },
     {
       accessorKey: 'category',
