@@ -3,7 +3,6 @@ import {
   collection, 
   query, 
   where, 
-  orderBy, 
   onSnapshot, 
   addDoc, 
   deleteDoc, 
@@ -30,8 +29,7 @@ export function useExpenses() {
     // Security rules will enforce that users can only read their own expenses
     const q = query(
       expensesRef, 
-      where('uid', '==', user.uid),
-      orderBy('date', 'desc') // Assuming 'date' is a YYYY-MM-DD string
+      where('uid', '==', user.uid)
     );
 
     const unsubscribe = onSnapshot(

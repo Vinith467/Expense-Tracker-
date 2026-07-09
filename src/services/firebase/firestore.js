@@ -1,7 +1,11 @@
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { getFirestore, enableIndexedDbPersistence, connectFirestoreEmulator } from 'firebase/firestore';
 import app from './config';
 
 export const db = getFirestore(app);
+
+enableIndexedDbPersistence(db).catch((err) => {
+  console.warn("Firestore persistence error:", err.code);
+});
 
 // Collection name constants (see Firestore schema in project docs)
 export const COLLECTIONS = {
