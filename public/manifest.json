@@ -1,0 +1,17 @@
+{
+  "name": "Expense Tracker Pro",
+  "short_name": "Tracker Pro",
+  "description": "A premium glassmorphism expense tracking application.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090e17",
+  "theme_color": "#090e17",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
