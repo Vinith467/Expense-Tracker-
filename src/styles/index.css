@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+/*
+  Theme tokens for the Expense Tracker.
+  Tailwind v4 reads custom design tokens straight from CSS via @theme,
+  so these become usable as utilities, e.g. bg-background, text-primary,
+  border-primary/40, rounded-xl (already built in), etc.
+*/
+@theme {
+  --color-background: #0f172a; /* almost-black */
+  --color-surface: #0f172acc; /* used with glassmorphism cards */
+
+  --color-primary: #10b981; /* emerald */
+  --color-primary-hover: #059669;
+  --color-secondary: #3b82f6; /* blue */
+
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+
+  --radius-card: 1.25rem; /* large rounded corners */
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: #e2e8f0;
+  }
+}
+
+@layer components {
+  /* Reusable glassmorphism card, used across dashboard widgets */
+  .glass-card {
+    @apply rounded-[var(--radius-card)] border border-white/10 bg-white/5 backdrop-blur-xl shadow-lg shadow-black/20;
+  }
+}

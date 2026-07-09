@@ -1,0 +1,45 @@
+rules_version = '2';
+
+// Single-user app: every document under a user-scoped collection must carry
+// a `uid` field matching the signed-in user's uid. Adjust if you later add
+// collections that aren't per-user (e.g. shared reference data).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /expenses/{docId} {
+      allow read, update, delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+    }
+
+    match /income/{docId} {
+      allow read, update, delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+    }
+
+    match /budgets/{docId} {
+      allow read, update, delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+    }
+
+    match /goals/{docId} {
+      allow read, update, delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+    }
+
+    match /settings/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
