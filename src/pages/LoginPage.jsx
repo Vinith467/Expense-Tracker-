@@ -1,9 +1,13 @@
 import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { signInWithEmail, registerWithEmail } from '../services/firebase/auth';
+import { useAuthStore } from '../store/useAuthStore';
+import { ROUTES } from '../constants/app';
 
 const SECRET_EMAIL = 'admin@expensetracker.app';
 
 export default function LoginPage() {
+  const { user } = useAuthStore();
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,6 +46,10 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  if (user) {
+    return <Navigate to={ROUTES.DASHBOARD} replace />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
