@@ -187,7 +187,7 @@ export default function ExpenseTable() {
                     <span className="text-white font-semibold text-base leading-tight">
                       {data.description || <span className="text-slate-500 italic font-normal">No description</span>}
                     </span>
-                    <span className="text-slate-500 text-[11px] font-bold tracking-wider uppercase">
+                    <span className="text-slate-300 text-[11px] font-bold tracking-wider uppercase">
                       {new Date(data.date).toLocaleDateString()}
                     </span>
                   </div>
