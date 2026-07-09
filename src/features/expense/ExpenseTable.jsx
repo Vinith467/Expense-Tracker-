@@ -18,6 +18,7 @@ export default function ExpenseTable() {
     {
       accessorKey: 'date',
       header: 'Date',
+      meta: { className: 'whitespace-nowrap' },
       cell: info => new Date(info.getValue()).toLocaleDateString(),
     },
     {
@@ -48,6 +49,7 @@ export default function ExpenseTable() {
     {
       accessorKey: 'category',
       header: 'Category',
+      meta: { className: 'hidden md:table-cell' },
       cell: info => (
         <span className="bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-lg text-xs font-bold tracking-wide uppercase shadow-[0_0_10px_rgba(16,185,129,0.1)]">
           {info.getValue()}
@@ -57,6 +59,7 @@ export default function ExpenseTable() {
     {
       accessorKey: 'paymentMethod',
       header: 'Payment Method',
+      meta: { className: 'hidden sm:table-cell' },
     },
     {
       accessorKey: 'amount',
@@ -118,7 +121,7 @@ export default function ExpenseTable() {
                 {headerGroup.headers.map(header => (
                   <th 
                     key={header.id} 
-                    className="px-6 py-5 font-bold tracking-wider cursor-pointer hover:text-white transition-colors"
+                    className={`px-4 sm:px-6 py-4 sm:py-5 font-bold tracking-wider cursor-pointer hover:text-white transition-colors ${header.column.columnDef.meta?.className || ''}`}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder
@@ -141,7 +144,7 @@ export default function ExpenseTable() {
               table.getRowModel().rows.map(row => (
                 <tr key={row.id} className="hover:bg-white/5 transition-colors group">
                   {row.getVisibleCells().map(cell => (
-                    <td key={cell.id} className="px-6 py-5 font-medium group-hover:text-white transition-colors">
+                    <td key={cell.id} className={`px-4 sm:px-6 py-4 sm:py-5 font-medium group-hover:text-white transition-colors ${cell.column.columnDef.meta?.className || ''}`}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}

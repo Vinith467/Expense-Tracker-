@@ -75,7 +75,7 @@ export default function ExpenseForm() {
   };
 
   return (
-    <div className="glass-card p-8 relative overflow-hidden">
+    <div className="glass-card p-5 sm:p-8 relative overflow-hidden">
       <div className="flex items-center justify-between mb-6 relative z-10">
         <h2 className="text-xl font-bold text-white tracking-wide">Add New Entry</h2>
         <button
@@ -118,8 +118,8 @@ export default function ExpenseForm() {
             
             <div className="space-y-3">
               {fields.map((field, index) => (
-                <div key={field.id} className="flex items-center gap-2">
-                  <div className="flex-[2]">
+                <div key={field.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-900/30 sm:bg-transparent p-3 sm:p-0 rounded-xl sm:rounded-none border border-white/5 sm:border-none">
+                  <div className="w-full sm:flex-[2]">
                     <input
                       type="text"
                       {...register(`items.${index}.name`, { required: true })}
@@ -127,33 +127,35 @@ export default function ExpenseForm() {
                       className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all"
                     />
                   </div>
-                  <div className="flex-1">
-                    <input
-                      type="number"
-                      step="0.01"
-                      {...register(`items.${index}.price`, { required: true, min: 0.01 })}
-                      placeholder="Price (₹)"
-                      className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all"
-                    />
+                  <div className="flex w-full sm:w-auto items-center gap-2">
+                    <div className="flex-1 sm:w-28">
+                      <input
+                        type="number"
+                        step="0.01"
+                        {...register(`items.${index}.price`, { required: true, min: 0.01 })}
+                        placeholder="Price (₹)"
+                        className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all"
+                      />
+                    </div>
+                    <div className="w-20">
+                      <input
+                        type="number"
+                        min="1"
+                        {...register(`items.${index}.quantity`, { required: true, min: 1 })}
+                        placeholder="Qty"
+                        className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-2 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all text-center"
+                      />
+                    </div>
+                    {fields.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => remove(index)}
+                        className="p-2 text-slate-500 hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
+                      >
+                        <MdRemoveCircleOutline className="text-xl" />
+                      </button>
+                    )}
                   </div>
-                  <div className="w-16">
-                    <input
-                      type="number"
-                      min="1"
-                      {...register(`items.${index}.quantity`, { required: true, min: 1 })}
-                      placeholder="Qty"
-                      className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-2 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all text-center"
-                    />
-                  </div>
-                  {fields.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="p-2 text-slate-500 hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
-                    >
-                      <MdRemoveCircleOutline className="text-xl" />
-                    </button>
-                  )}
                 </div>
               ))}
             </div>
