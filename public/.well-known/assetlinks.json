@@ -1,8 +1,8 @@
 [{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "app.vercel.expense_tracker_xi_pink_41.twa",
-        "sha256_cert_fingerprints": ["E2:AD:39:39:CC:58:52:15:CF:75:D3:2D:D9:90:45:34:34:28:C6:53:68:42:73:B2:87:0C:80:65:1B:AD:CC:03"]
-      }
-    }]
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.vercel.expense_tracker_xi_pink_41.twa",
+    "sha256_cert_fingerprints": ["E1:6B:A0:88:F1:18:D5:EB:B6:93:20:5F:5B:A2:E9:DB:56:5C:6C:07:1B:AA:D4:8E:5A:E6:B0:99:67:47:DA:F6"]
+  }
+}]
