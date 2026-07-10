@@ -5,16 +5,37 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import { useState } from 'react';
-import { MdDelete } from 'react-icons/md';
+import { useState, useMemo } from 'react';
+import { MdDelete, MdCheckCircle, MdPendingActions } from 'react-icons/md';
 import { useExpenses } from './useExpenses';
 import { DEFAULT_CURRENCY } from '../../constants/app';
 
 export default function ExpenseTable() {
   const { expenses, loading, deleteExpense } = useExpenses();
   const [sorting, setSorting] = useState([{ id: 'date', desc: true }]);
+  const [activeTab, setActiveTab] = useState('All');
 
-  const grandTotal = expenses.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
+  const filteredExpenses = useMemo(() => {
+    if (activeTab === 'All') return expenses;
+    return expenses.filter(exp => exp.paymentStatus === activeTab);
+  }, [expenses, activeTab]);
+
+  const grandTotal = filteredExpenses.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
+
+  const StatusBadge = ({ status }) => {
+    if (status === 'Paid') {
+      return (
+        <span className="inline-flex items-center gap-1 bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 px-2 py-1 rounded-md text-[10px] font-black tracking-widest uppercase shadow-[0_0_10px_rgba(16,185,129,0.1)] mt-2">
+          <MdCheckCircle /> PAID
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1 bg-amber-400/10 text-amber-400 border border-amber-400/20 px-2 py-1 rounded-md text-[10px] font-black tracking-widest uppercase shadow-[0_0_10px_rgba(251,191,36,0.1)] mt-2">
+        <MdPendingActions /> YET TO PAY
+      </span>
+    );
+  };
 
   const columns = [
     {
@@ -29,6 +50,7 @@ export default function ExpenseTable() {
       cell: info => {
         const desc = info.getValue();
         const items = info.row.original.items;
+        const status = info.row.original.paymentStatus || 'Yet to Pay';
         return (
           <div className="flex flex-col gap-2">
             <span className="font-medium text-white">{desc || <span className="text-slate-500 italic">No description</span>}</span>
@@ -44,6 +66,7 @@ export default function ExpenseTable() {
                 ))}
               </div>
             )}
+            <div><StatusBadge status={status} /></div>
           </div>
         );
       }
@@ -93,7 +116,7 @@ export default function ExpenseTable() {
   ];
 
   const table = useReactTable({
-    data: expenses,
+    data: filteredExpenses,
     columns,
     state: {
       sorting,
@@ -113,8 +136,29 @@ export default function ExpenseTable() {
     return <div className="text-slate-400 p-4 text-center">Loading expenses...</div>;
   }
 
+  const tabs = ['All', 'Paid', 'Yet to Pay'];
+
   return (
     <div className="glass-card overflow-hidden">
+      {/* Tabs Header */}
+      <div className="p-4 border-b border-white/10 bg-slate-900/60">
+        <div className="flex p-1 bg-slate-950/50 rounded-xl border border-white/5 max-w-md mx-auto">
+          {tabs.map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`flex-1 py-2 px-3 text-xs sm:text-sm font-bold rounded-lg transition-all ${
+                activeTab === tab 
+                  ? 'bg-primary text-slate-950 shadow-md' 
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Desktop Table View (md and up) */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-300">
@@ -158,7 +202,7 @@ export default function ExpenseTable() {
                 <td colSpan={columns.length} className="px-6 py-12 text-center text-slate-500 font-medium">
                   <div className="flex flex-col items-center justify-center space-y-3">
                     <MdDelete className="text-4xl opacity-20" />
-                    <span>No expenses found. Add one above!</span>
+                    <span>No expenses found in this category.</span>
                   </div>
                 </td>
               </tr>
@@ -169,7 +213,7 @@ export default function ExpenseTable() {
 
       {/* Desktop Grand Total Footer */}
       <div className="hidden md:flex justify-between items-center p-6 bg-slate-900 border-t border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] z-10 relative">
-        <span className="text-xl font-bold text-slate-300 tracking-wider uppercase">Grand Total</span>
+        <span className="text-xl font-bold text-slate-300 tracking-wider uppercase">Grand Total ({activeTab})</span>
         <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-primary drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]">
           {new Intl.NumberFormat('en-IN', { style: 'currency', currency: DEFAULT_CURRENCY }).format(grandTotal)}
         </span>
@@ -180,6 +224,7 @@ export default function ExpenseTable() {
         {table.getRowModel().rows.length > 0 ? (
           table.getRowModel().rows.map(row => {
             const data = row.original;
+            const status = data.paymentStatus || 'Yet to Pay';
             return (
               <div key={row.id} className="p-5 space-y-4 hover:bg-white/5 transition-colors">
                 <div className="flex justify-between items-start">
@@ -187,9 +232,10 @@ export default function ExpenseTable() {
                     <span className="text-white font-semibold text-base leading-tight">
                       {data.description || <span className="text-slate-500 italic font-normal">No description</span>}
                     </span>
-                    <span className="text-slate-300 text-[11px] font-bold tracking-wider uppercase">
+                    <span className="text-slate-300 text-[11px] font-bold tracking-wider uppercase flex items-center gap-2">
                       {new Date(data.date).toLocaleDateString()}
                     </span>
+                    <div><StatusBadge status={status} /></div>
                   </div>
                   <span className="bg-primary/10 text-primary border border-primary/20 px-2 py-1 rounded-md text-[10px] font-black tracking-widest uppercase shadow-[0_0_10px_rgba(16,185,129,0.1)]">
                     {data.category}
@@ -239,14 +285,14 @@ export default function ExpenseTable() {
         ) : (
           <div className="p-12 text-center text-slate-500 font-medium flex flex-col items-center justify-center space-y-3">
             <MdDelete className="text-4xl opacity-20" />
-            <span>No expenses found.</span>
+            <span>No expenses found in this category.</span>
           </div>
         )}
       </div>
 
       {/* Mobile Grand Total Footer */}
       <div className="md:hidden flex justify-between items-center p-5 bg-slate-900 border-t border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] sticky bottom-0 z-20">
-        <span className="text-lg font-bold text-slate-300 tracking-wider uppercase">Total</span>
+        <span className="text-lg font-bold text-slate-300 tracking-wider uppercase">Total ({activeTab})</span>
         <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-primary drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]">
           {new Intl.NumberFormat('en-IN', { style: 'currency', currency: DEFAULT_CURRENCY }).format(grandTotal)}
         </span>
@@ -272,7 +318,7 @@ export default function ExpenseTable() {
         </div>
         <div className="font-medium px-4 py-2 bg-slate-900/50 rounded-xl border border-white/5 shadow-inner">
           Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
+          {table.getPageCount() || 1}
         </div>
       </div>
     </div>

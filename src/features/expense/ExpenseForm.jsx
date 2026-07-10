@@ -29,14 +29,17 @@ export default function ExpenseForm() {
   const [quantities, setQuantities] = useState({});
   const [isEditingMenu, setIsEditingMenu] = useState(false);
   const [forceManual, setForceManual] = useState(false);
+  const [isScannedBill, setIsScannedBill] = useState(false);
 
   // Reset quantities when category changes, but don't force manual off if we just scanned a receipt
   useEffect(() => {
     setQuantities({});
+    setIsScannedBill(false);
   }, [currentCategory]);
 
   const updateQuantity = (id, delta) => {
     setForceManual(false); // If they start tapping the POS grid again, turn off forced manual
+    setIsScannedBill(false);
     setQuantities(prev => {
       const current = prev[id] || 0;
       const next = Math.max(0, current + delta);
@@ -53,6 +56,7 @@ export default function ExpenseForm() {
       setValue('manualAmount', scannedData.amount);
     }
     setForceManual(true);
+    setIsScannedBill(true);
   };
 
   const calculatedTotal = isManualFallback 
@@ -97,12 +101,14 @@ export default function ExpenseForm() {
         date: data.date,
         description: data.description,
         paymentMethod: data.paymentMethod,
-        items: finalItems
+        items: finalItems,
+        paymentStatus: isScannedBill ? "Paid" : "Yet to Pay"
       });
       
       reset(); 
       setQuantities({});
       setForceManual(false);
+      setIsScannedBill(false);
     } catch (error) {
       console.error("Failed to add expense:", error);
       alert("Failed to add expense. Check console for details.");
