@@ -4,11 +4,11 @@ import Tesseract from 'tesseract.js';
 import { CATEGORIES } from './ExpenseForm';
 
 const KEYWORD_MAP = {
-  'food': ['restaurant', 'cafe', 'burger', 'pizza', 'deli', 'bakery', 'coffee', 'swiggy', 'zomato'],
-  'transport': ['uber', 'ola', 'taxi', 'fuel', 'petrol', 'toll', 'parking', 'transit', 'railway'],
+  'food': ['restaurant', 'cafe', 'burger', 'pizza', 'deli', 'bakery', 'coffee', 'swiggy', 'zomato', 'hotel', 'dhaba'],
+  'transport': ['uber', 'ola', 'taxi', 'fuel', 'petrol', 'toll', 'parking', 'transit', 'railway', 'highway', 'transport', 'auto', 'nhai'],
   'health': ['pharmacy', 'clinic', 'hospital', 'medical', 'dental', 'apollo'],
   'shopping': ['supermarket', 'mart', 'mall', 'store', 'amazon', 'flipkart', 'retail'],
-  'utilities': ['electric', 'water', 'internet', 'bill', 'telecom', 'recharge']
+  'utilities': ['electric', 'water', 'internet', 'bill', 'telecom', 'recharge', 'wifi']
 };
 
 export default function ReceiptScanner({ onScanComplete }) {
@@ -41,31 +41,42 @@ export default function ReceiptScanner({ onScanComplete }) {
 
       // 1. Extract Merchant/Title (usually first significant line)
       for (let line of lines) {
-        if (line.length > 3 && !line.toLowerCase().includes('total') && !line.toLowerCase().includes('date')) {
-          parsedTitle = line.substring(0, 30);
-          break;
+        // Must be > 4 chars, not contain total/date, and have at least one alphabetic word > 3 chars
+        if (line.length > 4 && !line.toLowerCase().includes('total') && !line.toLowerCase().includes('date') && /[a-zA-Z]{4,}/.test(line)) {
+          // Filter out lines that are mostly numbers or special chars (like "5 a 9")
+          const letters = line.match(/[a-zA-Z]/g);
+          if (letters && letters.length > (line.length / 3)) {
+            parsedTitle = line.substring(0, 30);
+            break;
+          }
         }
       }
 
       // 2. Extract Total Amount
-      // Look for "Total", "Amount", "Net" followed by a number
-      const amountRegex = /(?:total|amount|net|sum|pay|due|rupees|rs)\s*[:=\-]?\s*(?:rs\.?|₹)?\s*(\d+(?:\.\d{1,2})?)/i;
+      // Look for "Total", "Amount", "Net", "Fee", "Fare", "Charge" followed by a number
+      const amountRegex = /(?:total|amount|net|sum|pay|due|rupees|rs|fee|fare|charge)\s*[:=\-]?\s*(?:rs\.?|₹|inr)?\s*(\d+(?:\.\d{1,2})?)/i;
+      const currencyRegex = /(?:rs\.?|₹|inr)\s*(\d+(?:\.\d{1,2})?)/i;
       
       for (let i = lines.length - 1; i >= 0; i--) { // Read bottom up for totals
-        const match = lines[i].match(amountRegex);
+        let match = lines[i].match(amountRegex);
+        if (!match) match = lines[i].match(currencyRegex); // Fallback to just checking for currency symbol
+        
         if (match && match[1]) {
           parsedAmount = match[1];
           break;
         }
       }
       
-      // Fallback: Just find the largest number on the receipt with a decimal
+      // Fallback: Just find the largest reasonable number on the receipt
       if (!parsedAmount) {
         let maxVal = 0;
-        const allNums = text.match(/\b\d+\.\d{2}\b/g) || [];
+        const allNums = text.match(/\b\d+(?:\.\d{1,2})?\b/g) || [];
         allNums.forEach(n => {
           const val = parseFloat(n);
-          if (val > maxVal && val < 100000) maxVal = val;
+          // Avoid dates (e.g. 2024-2030), very large zip codes/IDs, etc.
+          if (val > maxVal && val < 50000 && (val < 2000 || val > 2050)) {
+            maxVal = val;
+          }
         });
         if (maxVal > 0) parsedAmount = maxVal.toString();
       }
