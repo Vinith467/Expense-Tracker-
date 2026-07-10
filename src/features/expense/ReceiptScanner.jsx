@@ -49,14 +49,16 @@ export default function ReceiptScanner({ onScanComplete }) {
 
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      // Using gemini-1.5-flash as it is extremely fast and heavily optimized for multimodal tasks like receipts
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        generationConfig: { responseMimeType: "application/json" }
+      });
 
       setProgress('AI analyzing receipt...');
       const imagePart = await fileToGenerativePart(file);
 
       const prompt = `
-        Analyze this receipt. Extract the following information and return ONLY a valid JSON object with NO markdown formatting, NO backticks, and NO other text.
+        Analyze this receipt. Extract the following information and return ONLY a valid JSON object.
         
         Required JSON structure:
         {
@@ -75,12 +77,6 @@ export default function ReceiptScanner({ onScanComplete }) {
       const response = await result.response;
       let text = response.text().trim();
       
-      // Clean up markdown if the AI accidentally included it
-      if (text.startsWith('```json')) text = text.replace('```json', '');
-      if (text.startsWith('```')) text = text.replace('```', '');
-      if (text.endsWith('```')) text = text.replace(/```$/, '');
-      text = text.trim();
-
       const parsedData = JSON.parse(text);
 
       onScanComplete({
@@ -91,13 +87,15 @@ export default function ReceiptScanner({ onScanComplete }) {
 
     } catch (err) {
       console.error("Gemini AI Error:", err);
-      if (err.message && err.message.includes('API key not valid')) {
+      const errMsg = err.message ? err.message.toLowerCase() : String(err).toLowerCase();
+      
+      if (errMsg.includes('api key') || errMsg.includes('key not valid') || errMsg.includes('unauthorized')) {
         alert("Invalid API Key. Please check your Gemini API key.");
         localStorage.removeItem('gemini_api_key');
         setApiKey('');
         setShowKeyInput(true);
       } else {
-        alert("Failed to scan receipt via AI. Please try again or enter manually.");
+        alert(`AI Error: ${err.message || 'Unknown error'}. Try taking a clearer photo.`);
       }
     } finally {
       setIsScanning(false);
