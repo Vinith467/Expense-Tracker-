@@ -70,5 +70,12 @@ export function useExpenses() {
     return deleteDoc(docRef);
   };
 
-  return { expenses, loading, error, addExpense, deleteExpense };
+  const updateExpenseStatus = async (id, newStatus) => {
+    if (!user) throw new Error("Must be logged in to update an expense");
+    const { updateDoc } = await import('firebase/firestore');
+    const docRef = doc(db, 'expenses', id);
+    return updateDoc(docRef, { paymentStatus: newStatus });
+  };
+
+  return { expenses, loading, error, addExpense, deleteExpense, updateExpenseStatus };
 }

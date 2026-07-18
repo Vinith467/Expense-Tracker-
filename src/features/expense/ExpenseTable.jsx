@@ -11,7 +11,7 @@ import { useExpenses } from './useExpenses';
 import { DEFAULT_CURRENCY } from '../../constants/app';
 
 export default function ExpenseTable() {
-  const { expenses, loading, deleteExpense } = useExpenses();
+  const { expenses, loading, deleteExpense, updateExpenseStatus } = useExpenses();
   const [sorting, setSorting] = useState([{ id: 'date', desc: true }]);
   const [activeTab, setActiveTab] = useState('All');
 
@@ -99,19 +99,38 @@ export default function ExpenseTable() {
     },
     {
       id: 'actions',
-      cell: info => (
-        <button
-          onClick={() => {
-            if (window.confirm("Are you sure you want to delete this expense?")) {
-              deleteExpense(info.row.original.id);
-            }
-          }}
-          className="text-slate-500 hover:text-danger bg-slate-900/50 hover:bg-danger/20 p-2 rounded-xl transition-all duration-300 shadow-inner"
-          title="Delete Expense"
-        >
-          <MdDelete className="text-xl" />
-        </button>
-      )
+      cell: info => {
+        const data = info.row.original;
+        const isYetToPay = data.paymentStatus === 'Yet to Pay' || !data.paymentStatus;
+        return (
+          <div className="flex items-center gap-2">
+            {isYetToPay && (
+              <button
+                onClick={() => {
+                  if (window.confirm("Mark this expense as Paid?")) {
+                    updateExpenseStatus(data.id, 'Paid');
+                  }
+                }}
+                className="text-slate-500 hover:text-emerald-400 bg-slate-900/50 hover:bg-emerald-400/20 p-2 rounded-xl transition-all duration-300 shadow-inner"
+                title="Mark as Paid"
+              >
+                <MdCheckCircle className="text-xl" />
+              </button>
+            )}
+            <button
+              onClick={() => {
+                if (window.confirm("Are you sure you want to delete this expense?")) {
+                  deleteExpense(data.id);
+                }
+              }}
+              className="text-slate-500 hover:text-danger bg-slate-900/50 hover:bg-danger/20 p-2 rounded-xl transition-all duration-300 shadow-inner"
+              title="Delete Expense"
+            >
+              <MdDelete className="text-xl" />
+            </button>
+          </div>
+        );
+      }
     }
   ];
 
@@ -267,6 +286,19 @@ export default function ExpenseTable() {
                     <span className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300">
                       {new Intl.NumberFormat('en-IN', { style: 'currency', currency: DEFAULT_CURRENCY }).format(data.amount)}
                     </span>
+                    {(status === 'Yet to Pay' || !data.paymentStatus) && (
+                      <button
+                        onClick={() => {
+                          if (window.confirm("Mark this expense as Paid?")) {
+                            updateExpenseStatus(data.id, 'Paid');
+                          }
+                        }}
+                        className="text-slate-500 hover:text-emerald-400 bg-slate-900/50 hover:bg-emerald-400/20 p-2 rounded-xl transition-all duration-300 border border-white/5"
+                        title="Mark as Paid"
+                      >
+                        <MdCheckCircle className="text-lg" />
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         if (window.confirm("Are you sure you want to delete this expense?")) {
